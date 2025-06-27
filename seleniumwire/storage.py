@@ -10,6 +10,7 @@ import uuid
 from collections import OrderedDict, defaultdict
 from datetime import datetime, timedelta
 from typing import DefaultDict, Iterator, List, Optional, Union
+from pathlib import Path
 
 from seleniumwire.request import Request, Response, WebSocketMessage
 
@@ -87,6 +88,16 @@ class RequestStorage:
         """
         request_id = str(uuid.uuid4())
         request_dir = self._get_request_dir(request_id)
+
+        # safety guard to prevent FileNotFoundError:
+        # Traceback (most recent call last):
+        # File "/home/rulesbuild/miniconda3/lib/python3.11/site-packages/seleniumwire/handler.py", line 67, in request
+        #     self.proxy.storage.save_request(request)
+        # File "/home/rulesbuild/miniconda3/lib/python3.11/site-packages/seleniumwire/storage.py", line 90, in save_request
+        #     os.mkdir(request_dir)
+        # FileNotFoundError: [Errno 2] No such file or directory: '/tmp/.seleniumwire/storage-31f660cf-0752-444b-a239-826bad25cff8/request-0e17f042-859d-4e81-a858-24d3dea856d6'
+        Path(request_dir).parent.mkdir(parents=True, exist_ok=True)
+
         os.mkdir(request_dir)
         request.id = request_id
 

@@ -4,7 +4,10 @@ from enum import Enum
 
 from kaitaistruct import BytesIO, KaitaiStream, KaitaiStruct
 from kaitaistruct import __version__ as ks_version
-from pkg_resources import parse_version
+try:
+    from packaging.version import parse as parse_version
+except ImportError:
+    from pkg_resources import parse_version
 
 from .vlq_base128_le import VlqBase128Le
 
